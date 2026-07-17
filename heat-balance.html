@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spacecraft Heat Balance Calculator — Hot & Cold Case Temperatures — Free Online Tool</title>
+<meta name="description" content="Free spacecraft thermal balance calculator. Radiative equilibrium temperature from solar, albedo, Earth IR, internal dissipation, surface areas and alpha/epsilon — hot and cold bounding cases side by side.">
+<meta name="keywords" content="spacecraft heat balance, equilibrium temperature, hot case cold case, alpha epsilon ratio, satellite thermal design, radiative balance">
+<link rel="canonical" href="https://sunelliot.github.io/thermal-design-tools/heat-balance.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Spacecraft Heat Balance Calculator">
+<meta property="og:description" content="Radiative equilibrium temperatures for the hot and cold bounding cases.">
+<link rel="stylesheet" href="styles.css?v=1">
+<script src="i18n.js?v=1"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Spacecraft Heat Balance Calculator","applicationCategory":"EngineeringApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">🌡️ ThermTools</a>
+</nav>
+
+<div class="page">
+<aside class="sidebar">
+  <a class="home" href="index.html" style="display:block;text-decoration:none">← All tools</a>
+  <ul class="toolnav">
+    <li class="grp">Environment</li>
+    <li><a href="environment-fluxes.html">Orbital Heat Fluxes</a></li>
+    <li class="grp">Heat Balance</li>
+    <li><a href="heat-balance.html" class="active">Spacecraft Heat Balance</a></li>
+    <li><a href="transient.html">Orbit Transient Temps</a></li>
+    <li class="grp">Rejection &amp; Control</li>
+    <li><a href="radiator.html">Radiator Sizing</a></li>
+    <li><a href="heater.html">Heater Sizing</a></li>
+    <li class="grp">Insulation &amp; Conduction</li>
+    <li><a href="mli.html">MLI Heat Leak</a></li>
+    <li><a href="conduction.html">Conductive Couplings</a></li>
+    <li class="grp">Reference</li>
+    <li><a href="reference.html">Coatings, Materials &amp; Limits</a></li>
+  </ul>
+</aside>
+<div class="pagemain">
+
+<header>
+  <h1>⚖️ Spacecraft Heat Balance Calculator</h1>
+  <p>Single-node radiative equilibrium · hot &amp; cold bounding cases · α/ε and area effects</p>
+</header>
+
+<div class="wrap">
+  <div class="preset-bar">
+    <button data-preset="smallsat">EO smallsat, mixed surfaces</button>
+    <button data-preset="cubesat">3U CubeSat</button>
+    <button data-preset="white">White-painted bus</button>
+    <button data-preset="kapton">MLI/kapton wrapped</button>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="grid">
+    <div class="card">
+      <h2><span class="dot"></span>Geometry &amp; Surfaces</h2>
+      <div class="row">
+        <label>Sun-projected area<span class="hint">m², A_sun</span></label>
+        <input type="number" id="asun" value="1.0" step="any">
+      </div>
+      <div class="row">
+        <label>Nadir-facing area<span class="hint">m², sees Earth IR &amp; albedo</span></label>
+        <input type="number" id="anadir" value="1.0" step="any">
+      </div>
+      <div class="row">
+        <label>Total radiating area<span class="hint">m², all external surfaces</span></label>
+        <input type="number" id="arad" value="6.0" step="any">
+      </div>
+      <div class="row">
+        <label>Absorptivity α<span class="hint">solar, area-averaged</span></label>
+        <input type="number" id="alpha" value="0.5" step="any">
+      </div>
+      <div class="row">
+        <label>Emissivity ε<span class="hint">IR, area-averaged</span></label>
+        <input type="number" id="eps" value="0.8" step="any">
+      </div>
+      <div class="row">
+        <label>Orbit altitude<span class="hint">km — sets Earth view factor</span></label>
+        <input type="number" id="alt" value="500" step="any">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Cases</h2>
+      <div class="row">
+        <label>Internal power — hot<span class="hint">W dissipated, max ops</span></label>
+        <input type="number" id="qhot" value="150" step="any">
+      </div>
+      <div class="row">
+        <label>Internal power — cold<span class="hint">W dissipated, safe/eclipse</span></label>
+        <input type="number" id="qcold" value="100" step="any">
+      </div>
+      <div class="row">
+        <label>Cold case sun<span class="hint">eclipse = no solar/albedo</span></label>
+        <select id="coldsun" style="width:210px;text-align:left">
+          <option value="ecl" selected>In eclipse (S = 0)</option>
+          <option value="sun">Sunlit, aphelion (S = 1322)</option>
+        </select>
+      </div>
+      <div class="note" id="hbnote"></div>
+    </div>
+
+    <div class="card results">
+      <h2><span class="dot"></span>Hot Case</h2>
+      <div class="resgrid">
+        <div class="metric"><div class="k">Absorbed solar</div><div class="v"><span id="r_hs">–</span> <span class="u">W</span></div></div>
+        <div class="metric"><div class="k">Absorbed albedo</div><div class="v"><span id="r_ha">–</span> <span class="u">W</span></div></div>
+        <div class="metric"><div class="k">Absorbed Earth IR</div><div class="v"><span id="r_hi">–</span> <span class="u">W</span></div></div>
+        <div class="metric"><div class="k">Total heat in</div><div class="v"><span id="r_hq">–</span> <span class="u">W</span></div></div>
+        <div class="metric"><div class="k">Equilibrium temperature</div><div class="v"><span id="r_ht">–</span> <span class="u">°C</span></div></div>
+      </div>
+      <div id="hotBox" class="margin-box margin-good">–</div>
+    </div>
+
+    <div class="card results">
+      <h2><span class="dot"></span>Cold Case</h2>
+      <div class="resgrid">
+        <div class="metric"><div class="k">Absorbed solar</div><div class="v"><span id="r_cs">–</span> <span class="u">W</span></div></div>
+        <div class="metric"><div class="k">Absorbed albedo</div><div class="v"><span id="r_ca">–</span> <span class="u">W</span></div></div>
+        <div class="metric"><div class="k">Absorbed Earth IR</div><div class="v"><span id="r_ci">–</span> <span class="u">W</span></div></div>
+        <div class="metric"><div class="k">Total heat in</div><div class="v"><span id="r_cq">–</span> <span class="u">W</span></div></div>
+        <div class="metric"><div class="k">Equilibrium temperature</div><div class="v"><span id="r_ct">–</span> <span class="u">°C</span></div></div>
+      </div>
+      <div id="coldBox" class="margin-box margin-good">–</div>
+    </div>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="card">
+    <h2><span class="dot"></span>📖 How to use</h2>
+    <ol class="howto">
+      <li><span class="en-only">Enter the three <b>areas</b> (sun-projected, nadir-facing, total radiating) and the area-averaged <b>α/ε</b> — get coating values from the Reference page.</span><span class="zh-only">输入三个<b>面积</b>（对日投影、对地、总辐射）与面积加权的 <b>α/ε</b>——涂层数值见参考页。</span></li>
+      <li><span class="en-only">Set <b>internal dissipation</b> for max-ops (hot) and safe-mode/eclipse (cold); the two cases bound the mission.</span><span class="zh-only">分别设置最大工况（热）与安全模式/地影（冷）的<b>内部耗散</b>；两个工况即任务包络。</span></li>
+      <li><span class="en-only">Compare the equilibrium temperatures with your component limits: the verdict boxes flag outside −20…+50 °C (typical electronics).</span><span class="zh-only">将平衡温度与设备温度范围对比：结论框按 −20…+50 °C（典型电子设备）给出提示。</span></li>
+      <li><span class="en-only">Hot too hot → lower α/ε or add a radiator; cold too cold → add MLI (smaller radiating area) and heaters — size them in the dedicated tools.</span><span class="zh-only">过热 → 降低 α/ε 或加散热面；过冷 → 加多层隔热（减小辐射面积）并配加热器——用对应工具细化。</span></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="article en-only">
+      <h2>Single-node heat balance</h2>
+      <p>Treating the spacecraft as one isothermal node, equilibrium requires heat in = heat out:</p>
+      <p><code>α·S·A_sun + α·a·S·F·A_nadir + ε·E·F·A_nadir + Q_int = ε·σ·A_rad·T⁴</code></p>
+      <p>so <code>T = [(Q_absorbed + Q_int)/(ε·σ·A_rad)]^0.25</code>. The α/ε ratio sets the sun-driven temperature: white paint (α/ε ≈ 0.2) runs cold, black paint (≈ 1.1) neutral, bare metal (≈ 3) hot.</p>
+      <p>A single node hides internal gradients (real spacecraft see ±10–20 °C spread) — use it to bound the design and to size radiators/heaters, then verify with a multi-node model (e.g. Thermal Desktop/ESATAN).</p>
+      <p>All computation runs locally in your browser.</p>
+    </div>
+    <div class="article zh-only">
+      <h2>单节点热平衡</h2>
+      <p>把整星视为一个等温节点，平衡条件为吸热 = 散热：</p>
+      <p><code>α·S·A_sun + α·a·S·F·A_nadir + ε·E·F·A_nadir + Q_int = ε·σ·A_rad·T⁴</code></p>
+      <p>即 <code>T = [(Q_吸收 + Q_内)/(ε·σ·A_rad)]^0.25</code>。α/ε 之比决定受晒温度：白漆（α/ε ≈ 0.2）偏冷，黑漆（≈ 1.1）居中，裸金属（≈ 3）偏热。</p>
+      <p>单节点掩盖了内部梯度（真实卫星各处相差 ±10–20 °C）——它用于包络设计与散热面/加热器初步定容，之后应以多节点模型（Thermal Desktop/ESATAN 等）校核。</p>
+      <p>全部计算在你的浏览器本地完成。</p>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<footer>Free spacecraft heat balance calculator · hot/cold equilibrium temperatures · nothing leaves your browser.</footer>
+
+<script src="share.js?v=1"></script>
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>parseFloat($(id).value)||0;
+const RE=6378.137, SIG=5.670374e-8;
+
+function eqCase(S,a,E,alpha,eps,asun,anadir,arad,F,qint){
+  const sol=alpha*S*asun;
+  const albW=alpha*a*S*F*anadir;
+  const ir=eps*E*F*anadir;
+  const qtot=sol+albW+ir+qint;
+  const T=Math.pow(qtot/(eps*SIG*arad),0.25);
+  return {sol,albW,ir,qtot,T};
+}
+function verdict(box,Tc){
+  const lo=-20, hi=50;
+  if(Tc>=lo&&Tc<=hi){
+    box.className='margin-box margin-good';
+    box.textContent=t('Within typical electronics range (−20…+50 °C).','处于典型电子设备范围（−20…+50 °C）内。');
+  }else if(Tc>hi){
+    box.className='margin-box margin-bad';
+    box.textContent=t('Too hot ('+Tc.toFixed(1)+' °C) — reduce α, increase ε·A_rad, or add a dedicated radiator.','过热（'+Tc.toFixed(1)+' °C）——降低 α、增大 ε·A_rad 或增设散热面。');
+  }else{
+    box.className='margin-box margin-warn';
+    box.textContent=t('Cold ('+Tc.toFixed(1)+' °C) — add MLI to shrink radiating area and size heaters for the deficit.','偏冷（'+Tc.toFixed(1)+' °C）——用多层隔热减小辐射面积，并按差额配置加热器。');
+  }
+}
+function compute(){
+  const asun=num('asun'), anadir=num('anadir'), arad=num('arad');
+  const alpha=num('alpha'), eps=num('eps'), alt=num('alt');
+  if(arad<=0||eps<=0||alt<=0) return;
+  const F=(RE/(RE+alt))**2;
+  const hot=eqCase(1414,0.35,258,alpha,eps,asun,anadir,arad,F,num('qhot'));
+  const coldSun=$('coldsun').value==='sun';
+  const cold=eqCase(coldSun?1322:0,coldSun?0.25:0,218,alpha,eps,asun,anadir,arad,F,num('qcold'));
+  const f1=x=>x.toFixed(1);
+  $('r_hs').textContent=f1(hot.sol); $('r_ha').textContent=f1(hot.albW);
+  $('r_hi').textContent=f1(hot.ir);  $('r_hq').textContent=f1(hot.qtot);
+  $('r_ht').textContent=f1(hot.T-273.15);
+  $('r_cs').textContent=f1(cold.sol); $('r_ca').textContent=f1(cold.albW);
+  $('r_ci').textContent=f1(cold.ir);  $('r_cq').textContent=f1(cold.qtot);
+  $('r_ct').textContent=f1(cold.T-273.15);
+  verdict($('hotBox'),hot.T-273.15);
+  verdict($('coldBox'),cold.T-273.15);
+  $('hbnote').textContent=t('Hot case uses S=1414, a=0.35, E=258; cold case '+(coldSun?'S=1322, a=0.25, E=218.':'eclipse (S=0), E=218.'),'热工况取 S=1414、a=0.35、E=258；冷工况'+(coldSun?'取 S=1322、a=0.25、E=218。':'为地影（S=0）、E=218。'));
+}
+const presets={
+  smallsat:{asun:1.0,anadir:1.0,arad:6.0,alpha:0.5,eps:0.8,alt:500,qhot:150,qcold:100,coldsun:'ecl'},
+  cubesat:{asun:0.03,anadir:0.03,arad:0.14,alpha:0.7,eps:0.8,alt:500,qhot:8,qcold:5,coldsun:'ecl'},
+  white:{asun:1.0,anadir:1.0,arad:6.0,alpha:0.25,eps:0.88,alt:500,qhot:150,qcold:100,coldsun:'ecl'},
+  kapton:{asun:1.0,anadir:1.0,arad:6.0,alpha:0.4,eps:0.67,alt:500,qhot:150,qcold:100,coldsun:'ecl'},
+};
+document.querySelectorAll('.preset-bar button').forEach(b=>b.addEventListener('click',()=>{
+  const c=presets[b.dataset.preset];for(const k in c)$(k).value=c[k];compute();}));
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',compute));
+if(window.ShareTool) ShareTool.apply();
+compute();
+if(window.ShareTool) ShareTool.initButton();
+if(window.onLang) window.onLang(compute);
+</script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script>
+</body>
+</html>

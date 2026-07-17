@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThermTools — Free Satellite Thermal Control Design Calculators</title>
+<meta name="description" content="A free toolkit of spacecraft thermal control calculators: orbital heat fluxes, hot/cold heat balance, transient temperature swing, radiator and heater sizing, MLI heat leak and conductive couplings.">
+<meta name="keywords" content="satellite thermal control calculators, spacecraft heat balance, radiator sizing, MLI, heater sizing, orbital heat flux, thermal design">
+<link rel="canonical" href="https://sunelliot.github.io/thermal-design-tools/">
+<meta property="og:title" content="ThermTools — Free Satellite Thermal Control Calculators">
+<meta property="og:description" content="Heat fluxes, heat balance, transient swing, radiator, heater, MLI and conduction — all free, in your browser.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="styles.css?v=1">
+<script src="i18n.js?v=1"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"ThermTools","url":"https://sunelliot.github.io/thermal-design-tools/","description":"Free spacecraft thermal control design calculators."}
+</script>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">🌡️ ThermTools</a>
+</nav>
+
+<div class="pagehead"><div class="inner">
+  <h1>Satellite Thermal Control Tools</h1>
+  <p>Free browser-based calculators for spacecraft thermal design — no signup, nothing uploaded.</p>
+</div></div>
+
+<div class="gallery">
+  <!-- sidebar -->
+  <aside class="sidebar">
+    <h3>Categories</h3>
+    <ul class="cat-list">
+      <li><button data-cat="all" class="active">All tools <span class="ct">8</span></button></li>
+      <li><button data-cat="env">Environment <span class="ct">1</span></button></li>
+      <li><button data-cat="bal">Heat Balance <span class="ct">2</span></button></li>
+      <li><button data-cat="rej">Rejection &amp; Control <span class="ct">2</span></button></li>
+      <li><button data-cat="ins">Insulation &amp; Conduction <span class="ct">2</span></button></li>
+      <li><button data-cat="ref">Reference <span class="ct">1</span></button></li>
+    </ul>
+  </aside>
+
+  <!-- main -->
+  <div class="main">
+    <div class="main-head">
+      <span class="count" id="count">8 tools</span>
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#697086" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        <input id="q" type="search" placeholder="Search tools…" data-ph-en="Search tools…" data-ph-zh="搜索工具…" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="tool-grid" id="grid">
+
+      <a class="tcard" href="environment-fluxes.html" data-cat="env" data-search="orbital heat flux solar albedo earth ir view factor 热流 反照 红外 视角系数">
+        <svg class="thumb" viewBox="0 0 260 138" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="138" fill="#eef4ff"/>
+          <circle cx="130" cy="215" r="120" fill="#bfd7f2"/>
+          <circle cx="220" cy="28" r="14" fill="#d97706"/>
+          <rect x="122" y="44" width="16" height="16" rx="3" fill="#2563eb"/>
+          <g stroke="#d97706" stroke-width="2"><line x1="206" y1="40" x2="146" y2="48"/></g>
+          <g stroke="#16a34a" stroke-width="2" stroke-dasharray="4 3"><line x1="118" y1="96" x2="126" y2="64"/><line x1="142" y1="96" x2="136" y2="64"/></g>
+        </svg>
+        <div class="body"><span class="tag">Environment</span><h3>Orbital Heat Fluxes</h3>
+          <p>Solar constant by season, albedo and Earth IR with the altitude-dependent view factor.</p></div>
+      </a>
+
+      <a class="tcard" href="heat-balance.html" data-cat="bal" data-search="heat balance equilibrium temperature hot case cold case alpha epsilon 热平衡 平衡温度 工况">
+        <svg class="thumb" viewBox="0 0 260 138" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="138" fill="#fdf2f8"/>
+          <rect x="98" y="44" width="64" height="50" rx="6" fill="#fff" stroke="#2563eb" stroke-width="2.5"/>
+          <g stroke="#dc2626" stroke-width="2.5"><line x1="40" y1="56" x2="92" y2="62"/><line x1="40" y1="80" x2="92" y2="76"/></g>
+          <g stroke="#2563eb" stroke-width="2.5"><line x1="168" y1="62" x2="222" y2="52"/><line x1="168" y1="76" x2="222" y2="84"/></g>
+          <text x="130" y="74" font-size="14" fill="#2563eb" text-anchor="middle" font-family="sans-serif" font-weight="700">T⁴</text>
+        </svg>
+        <div class="body"><span class="tag">Heat Balance</span><h3>Spacecraft Heat Balance</h3>
+          <p>Single-node radiative equilibrium — hot and cold bounding case temperatures side by side.</p></div>
+      </a>
+
+      <a class="tcard" href="transient.html" data-cat="bal" data-search="transient temperature eclipse swing time constant thermal mass 瞬态 温度波动 时间常数">
+        <svg class="thumb" viewBox="0 0 260 138" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="138" fill="#eefaf2"/>
+          <rect x="150" y="18" width="58" height="102" fill="rgba(37,99,235,.12)"/>
+          <path d="M20,60 C60,44 110,40 150,46 C176,52 186,78 208,92 C224,100 236,84 246,64" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <div class="body"><span class="tag">Heat Balance</span><h3>Orbit Transient Temps</h3>
+          <p>Lumped-capacity temperature over two orbits — eclipse swing and time constant.</p></div>
+      </a>
+
+      <a class="tcard" href="radiator.html" data-cat="rej" data-search="radiator sizing heat rejection osr area 散热面 排热 面积">
+        <svg class="thumb" viewBox="0 0 260 138" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="138" fill="#eef4ff"/>
+          <g fill="#fff" stroke="#2563eb" stroke-width="2">
+            <rect x="50" y="40" width="160" height="58" rx="4"/>
+          </g>
+          <g stroke="#94b8ef" stroke-width="1.5"><line x1="76" y1="40" x2="76" y2="98"/><line x1="102" y1="40" x2="102" y2="98"/><line x1="128" y1="40" x2="128" y2="98"/><line x1="154" y1="40" x2="154" y2="98"/><line x1="180" y1="40" x2="180" y2="98"/></g>
+          <g stroke="#dc2626" stroke-width="2"><line x1="80" y1="34" x2="86" y2="16"/><line x1="126" y1="34" x2="132" y2="16"/><line x1="172" y1="34" x2="178" y2="16"/></g>
+        </svg>
+        <div class="body"><span class="tag">Rejection &amp; Control</span><h3>Radiator Sizing</h3>
+          <p>Required area from rejected heat and temperature, plus the cold-case heater check.</p></div>
+      </a>
+
+      <a class="tcard" href="heater.html" data-cat="rej" data-search="heater sizing survival thermostat duty cycle 加热器 保温 占空比">
+        <svg class="thumb" viewBox="0 0 260 138" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="138" fill="#fff7ed"/>
+          <rect x="86" y="46" width="88" height="46" rx="6" fill="#fff" stroke="#d97706" stroke-width="2.5"/>
+          <path d="M100,80 L108,58 L116,80 L124,58 L132,80 L140,58 L148,80 L156,58" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="body"><span class="tag">Rejection &amp; Control</span><h3>Heater Sizing</h3>
+          <p>Cold-case conductive + radiative losses → heater power, duty cycle and orbit energy.</p></div>
+      </a>
+
+      <a class="tcard" href="mli.html" data-cat="ins" data-search="mli multilayer insulation effective emissivity blanket heat leak 多层隔热 有效发射率 漏热">
+        <svg class="thumb" viewBox="0 0 260 138" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="138" fill="#f4eefb"/>
+          <g stroke-width="3" fill="none">
+            <path d="M30,40 C90,28 170,52 230,38" stroke="#d9b64a"/>
+            <path d="M30,60 C90,48 170,72 230,58" stroke="#c9b3ec"/>
+            <path d="M30,80 C90,68 170,92 230,78" stroke="#d9b64a"/>
+            <path d="M30,100 C90,88 170,112 230,98" stroke="#c9b3ec"/>
+          </g>
+        </svg>
+        <div class="body"><span class="tag">Insulation &amp; Conduction</span><h3>MLI Heat Leak</h3>
+          <p>Effective emissivity from layer count with flight degradation, and the blanket heat leak.</p></div>
+      </a>
+
+      <a class="tcard" href="conduction.html" data-cat="ins" data-search="conductive coupling kA/L thermal strap bolted joint delta t 导热 热导 温降">
+        <svg class="thumb" viewBox="0 0 260 138" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="138" fill="#eefaf2"/>
+          <rect x="28" y="52" width="52" height="34" rx="4" fill="#fff" stroke="#dc2626" stroke-width="2"/>
+          <rect x="108" y="58" width="60" height="22" rx="3" fill="#d9944a"/>
+          <rect x="196" y="46" width="40" height="46" rx="4" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+          <line x1="80" y1="69" x2="108" y2="69" stroke="#697086" stroke-width="2"/>
+          <line x1="168" y1="69" x2="196" y2="69" stroke="#697086" stroke-width="2"/>
+        </svg>
+        <div class="body"><span class="tag">Insulation &amp; Conduction</span><h3>Conductive Couplings</h3>
+          <p>Series kA/L path with bolted joints — total conductance and per-segment ΔT.</p></div>
+      </a>
+
+      <a class="tcard" href="reference.html" data-cat="ref" data-search="coatings alpha epsilon materials temperature limits reference 涂层 材料 温度限值 参考">
+        <svg class="thumb" viewBox="0 0 260 138" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="138" fill="#fff7ed"/>
+          <text x="42" y="58" font-size="26" fill="#d97706" font-family="serif" font-style="italic">α/ε</text>
+          <text x="120" y="88" font-size="24" fill="#2563eb" font-family="serif" font-style="italic">k·A/L</text>
+          <text x="152" y="48" font-size="22" fill="#16a34a" font-family="serif" font-style="italic">σT⁴</text>
+        </svg>
+        <div class="body"><span class="tag">Reference</span><h3>Coatings, Materials &amp; Limits</h3>
+          <p>Coating α/ε BOL→EOL, material k &amp; c_p, component temperature limits, constants.</p></div>
+      </a>
+
+      <div class="empty" id="empty" style="display:none">No tools match your search.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  ThermTools · Free satellite thermal control calculators · heat balance / radiator / MLI · runs entirely in your browser.
+</footer>
+
+<script>
+const cards = [...document.querySelectorAll('.tcard')];
+const catBtns = [...document.querySelectorAll('.cat-list button')];
+let curCat = 'all', q = '';
+function refresh(){
+  let n = 0;
+  cards.forEach(c=>{
+    const okCat = curCat === 'all' || c.dataset.cat === curCat;
+    const okQ = !q || (c.dataset.search || '').toLowerCase().includes(q);
+    const show = okCat && okQ;
+    c.style.display = show ? '' : 'none';
+    if(show) n++;
+  });
+  const T = window.t || ((a,b)=>a);
+  document.getElementById('count').textContent = n + (n === 1 ? T(' tool',' 个工具') : T(' tools',' 个工具'));
+  document.getElementById('empty').style.display = n ? 'none' : '';
+}
+if(window.onLang) window.onLang(refresh);
+catBtns.forEach(b => b.addEventListener('click', ()=>{
+  curCat = b.dataset.cat;
+  catBtns.forEach(x => x.classList.toggle('active', x === b));
+  refresh();
+}));
+document.getElementById('q').addEventListener('input', e=>{ q = e.target.value.trim().toLowerCase(); refresh(); });
+refresh();
+</script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script>
+</body>
+</html>

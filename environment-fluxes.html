@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbital Heat Flux Calculator — Solar, Albedo & Earth IR — Free Online Tool</title>
+<meta name="description" content="Free orbital thermal environment calculator. Solar constant by season, albedo flux and Earth IR flux with the altitude-dependent Earth view factor — hot and cold case values for spacecraft thermal design.">
+<meta name="keywords" content="orbital heat flux, earth view factor, albedo flux, earth infrared flux, solar constant, spacecraft thermal environment, hot case cold case">
+<link rel="canonical" href="https://sunelliot.github.io/thermal-design-tools/environment-fluxes.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Orbital Heat Flux Calculator">
+<meta property="og:description" content="Solar, albedo and Earth IR fluxes with the altitude-dependent view factor.">
+<link rel="stylesheet" href="styles.css?v=1">
+<script src="i18n.js?v=1"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Orbital Heat Flux Calculator","applicationCategory":"EngineeringApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">🌡️ ThermTools</a>
+</nav>
+
+<div class="page">
+<aside class="sidebar">
+  <a class="home" href="index.html" style="display:block;text-decoration:none">← All tools</a>
+  <ul class="toolnav">
+    <li class="grp">Environment</li>
+    <li><a href="environment-fluxes.html" class="active">Orbital Heat Fluxes</a></li>
+    <li class="grp">Heat Balance</li>
+    <li><a href="heat-balance.html">Spacecraft Heat Balance</a></li>
+    <li><a href="transient.html">Orbit Transient Temps</a></li>
+    <li class="grp">Rejection &amp; Control</li>
+    <li><a href="radiator.html">Radiator Sizing</a></li>
+    <li><a href="heater.html">Heater Sizing</a></li>
+    <li class="grp">Insulation &amp; Conduction</li>
+    <li><a href="mli.html">MLI Heat Leak</a></li>
+    <li><a href="conduction.html">Conductive Couplings</a></li>
+    <li class="grp">Reference</li>
+    <li><a href="reference.html">Coatings, Materials &amp; Limits</a></li>
+  </ul>
+</aside>
+<div class="pagemain">
+
+<header>
+  <h1>🌍 Orbital Heat Flux Calculator</h1>
+  <p>Solar constant · albedo flux · Earth IR · altitude-dependent view factor · hot/cold cases</p>
+</header>
+
+<div class="wrap">
+  <div class="preset-bar">
+    <button data-preset="leo500">LEO 500 km</button>
+    <button data-preset="leo800">SSO 800 km</button>
+    <button data-preset="geo">GEO</button>
+    <button data-preset="vleo">VLEO 350 km</button>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="grid">
+    <div class="card">
+      <h2><span class="dot"></span>Inputs</h2>
+      <div class="row">
+        <label>Orbit altitude<span class="hint">km, circular</span></label>
+        <input type="number" id="alt" value="500" step="any">
+      </div>
+      <div class="row">
+        <label>Solar constant case<span class="hint">seasonal variation</span></label>
+        <select id="scase" style="width:210px;text-align:left">
+          <option value="hot">Hot — perihelion (1414 W/m²)</option>
+          <option value="mean" selected>Mean (1361 W/m²)</option>
+          <option value="cold">Cold — aphelion (1322 W/m²)</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Albedo coefficient<span class="hint">0.25–0.35 typical, hot case high</span></label>
+        <input type="number" id="alb" value="0.30" step="any">
+      </div>
+      <div class="row">
+        <label>Earth IR emission<span class="hint">W/m², 218–258, mean 237</span></label>
+        <input type="number" id="eir" value="237" step="any">
+      </div>
+      <div class="note" id="envnote"></div>
+    </div>
+
+    <div class="card results">
+      <h2><span class="dot"></span>Results</h2>
+      <div class="resgrid">
+        <div class="metric"><div class="k">Direct solar flux</div><div class="v"><span id="r_sol">–</span> <span class="u">W/m²</span></div></div>
+        <div class="metric"><div class="k">Earth view factor (nadir plate)</div><div class="v"><span id="r_vf">–</span> <span class="u"></span></div></div>
+        <div class="metric"><div class="k">Earth IR flux on nadir plate</div><div class="v"><span id="r_ir">–</span> <span class="u">W/m²</span></div></div>
+        <div class="metric"><div class="k">Peak albedo flux (subsolar)</div><div class="v"><span id="r_alb">–</span> <span class="u">W/m²</span></div></div>
+        <div class="metric"><div class="k">Earth angular radius</div><div class="v"><span id="r_ang">–</span> <span class="u">deg</span></div></div>
+        <div class="metric"><div class="k">Space sink temperature</div><div class="v">3 <span class="u">K</span></div></div>
+      </div>
+      <div class="note" id="sumnote"></div>
+    </div>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="card">
+    <h2><span class="dot"></span>📖 How to use</h2>
+    <ol class="howto">
+      <li><span class="en-only">Enter the <b>altitude</b> and pick the <b>solar constant case</b> — use the hot case (perihelion, high albedo/IR) and cold case (aphelion, low albedo/IR, eclipse) as bounding environments.</span><span class="zh-only">输入<b>高度</b>并选择<b>太阳常数工况</b>——热工况（近日点、高反照/红外）与冷工况（远日点、低反照/红外、地影）作为包络环境。</span></li>
+      <li><span class="en-only">The <b>view factor</b> scales Earth IR and albedo for a nadir-facing flat plate; other orientations see less.</span><span class="zh-only"><b>视角系数</b>是对地平板的取值，用于折算地球红外与反照；其他朝向取值更小。</span></li>
+      <li><span class="en-only">Feed these fluxes into <b>Spacecraft Heat Balance</b> and <b>Radiator Sizing</b>; get eclipse durations from OrbitTools' Beta Angle &amp; Eclipse tool.</span><span class="zh-only">把这些热流填入<b>整星热平衡</b>与<b>散热面设计</b>工具；地影时长用 OrbitTools 的 β 角与阴影工具计算。</span></li>
+      <li><span class="en-only">Albedo flux applies only on the sunlit side of the orbit and depends strongly on the sun-surface geometry — the value here is the subsolar worst case.</span><span class="zh-only">反照热流只在轨道光照段存在，且强烈依赖太阳-表面几何——此处给出的是星下点最恶劣值。</span></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="article en-only">
+      <h2>The three external heat sources</h2>
+      <p><strong>Direct solar:</strong> S = 1361 ± 3.4% W/m² over the year (Earth orbit eccentricity). Applies to sun-facing surfaces as α·S·cos θ.</p>
+      <p><strong>Albedo:</strong> sunlight reflected by the Earth, q_alb = a·S·F with a ≈ 0.30 ± 0.05. Worst at the subsolar point, zero in eclipse.</p>
+      <p><strong>Earth IR:</strong> the Earth radiates ≈ 237 W/m² (equivalent blackbody 255 K); a nadir plate receives E·F where the view factor for a flat plate is <code>F = (R_E/(R_E+h))²</code>.</p>
+      <p>Deep space is a ≈ 3 K sink — effectively zero return flux. These four numbers (S, a, E, F) define the classic hot/cold bounding cases used in early thermal design.</p>
+      <p>All computation runs locally in your browser.</p>
+    </div>
+    <div class="article zh-only">
+      <h2>三大外部热源</h2>
+      <p><strong>太阳直射:</strong> S = 1361 ± 3.4% W/m²（随地球轨道偏心率年变化）。对受晒表面按 α·S·cos θ 吸收。</p>
+      <p><strong>地球反照:</strong> 地球反射的阳光，q_alb = a·S·F，a ≈ 0.30 ± 0.05。星下点附近最大，地影中为零。</p>
+      <p><strong>地球红外:</strong> 地球自身辐射约 237 W/m²（等效黑体 255 K）；对地平板接收 E·F，平板视角系数 <code>F = (R_E/(R_E+h))²</code>。</p>
+      <p>深空是约 3 K 的热沉——回流可视为零。S、a、E、F 四个数即构成方案阶段经典的热/冷包络工况。</p>
+      <p>全部计算在你的浏览器本地完成。</p>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<footer>Free orbital heat flux calculator · solar, albedo, Earth IR · nothing leaves your browser.</footer>
+
+<script src="share.js?v=1"></script>
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>parseFloat($(id).value)||0;
+const RE=6378.137;
+const SCASES={hot:1414,mean:1361,cold:1322};
+
+function compute(){
+  const alt=num('alt');
+  if(alt<=0) return;
+  const S=SCASES[$('scase').value];
+  const a=num('alb'), E=num('eir');
+  const r=RE+alt;
+  const F=(RE/r)*(RE/r);
+  const qir=E*F;
+  const qalb=S*a*F;
+  const ang=Math.asin(RE/r)*180/Math.PI;
+  const f1=x=>x.toFixed(1), f3=x=>x.toFixed(3);
+  $('r_sol').textContent=S;
+  $('r_vf').textContent=f3(F);
+  $('r_ir').textContent=f1(qir);
+  $('r_alb').textContent=f1(qalb);
+  $('r_ang').textContent=f1(ang);
+  $('envnote').textContent=t('Hot case: S=1414, a≈0.35, E≈258. Cold case: S=1322 (or 0 in eclipse), a≈0.25, E≈218.','热工况：S=1414、a≈0.35、E≈258。冷工况：S=1322（地影中为 0）、a≈0.25、E≈218。');
+  $('sumnote').textContent=t('A nadir plate at '+alt+' km absorbs up to '+f1(qir)+' W/m² (IR, ×ε) + '+f1(qalb)+' W/m² (albedo, ×α) besides direct sun.','高度 '+alt+' km 的对地平板除直射外最多吸收 '+f1(qir)+' W/m²（红外，×ε）+ '+f1(qalb)+' W/m²（反照，×α）。');
+}
+const presets={
+  leo500:{alt:500,scase:'mean',alb:0.30,eir:237},
+  leo800:{alt:800,scase:'mean',alb:0.30,eir:237},
+  geo:{alt:35786,scase:'mean',alb:0.30,eir:237},
+  vleo:{alt:350,scase:'mean',alb:0.30,eir:237},
+};
+document.querySelectorAll('.preset-bar button').forEach(b=>b.addEventListener('click',()=>{
+  const c=presets[b.dataset.preset];for(const k in c)$(k).value=c[k];compute();}));
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',compute));
+if(window.ShareTool) ShareTool.apply();
+compute();
+if(window.ShareTool) ShareTool.initButton();
+if(window.onLang) window.onLang(compute);
+</script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script>
+</body>
+</html>

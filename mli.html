@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLI Heat Leak Calculator — Multilayer Insulation — Free Online Tool</title>
+<meta name="description" content="Free multilayer insulation calculator. Effective emissivity from layer count with a practical degradation factor, and the resulting MLI heat leak between hot and cold boundary temperatures.">
+<meta name="keywords" content="MLI calculator, multilayer insulation, effective emissivity, heat leak, thermal blanket, spacecraft insulation">
+<link rel="canonical" href="https://sunelliot.github.io/thermal-design-tools/mli.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MLI Heat Leak Calculator">
+<meta property="og:description" content="Effective emissivity vs layers and the resulting blanket heat leak.">
+<link rel="stylesheet" href="styles.css?v=1">
+<script src="i18n.js?v=1"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"MLI Heat Leak Calculator","applicationCategory":"EngineeringApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">🌡️ ThermTools</a>
+</nav>
+
+<div class="page">
+<aside class="sidebar">
+  <a class="home" href="index.html" style="display:block;text-decoration:none">← All tools</a>
+  <ul class="toolnav">
+    <li class="grp">Environment</li>
+    <li><a href="environment-fluxes.html">Orbital Heat Fluxes</a></li>
+    <li class="grp">Heat Balance</li>
+    <li><a href="heat-balance.html">Spacecraft Heat Balance</a></li>
+    <li><a href="transient.html">Orbit Transient Temps</a></li>
+    <li class="grp">Rejection &amp; Control</li>
+    <li><a href="radiator.html">Radiator Sizing</a></li>
+    <li><a href="heater.html">Heater Sizing</a></li>
+    <li class="grp">Insulation &amp; Conduction</li>
+    <li><a href="mli.html" class="active">MLI Heat Leak</a></li>
+    <li><a href="conduction.html">Conductive Couplings</a></li>
+    <li class="grp">Reference</li>
+    <li><a href="reference.html">Coatings, Materials &amp; Limits</a></li>
+  </ul>
+</aside>
+<div class="pagemain">
+
+<header>
+  <h1>🛡️ MLI Heat Leak Calculator</h1>
+  <p>Effective emissivity from layer count · practical degradation · blanket heat leak</p>
+</header>
+
+<div class="wrap">
+  <div class="preset-bar">
+    <button data-preset="bus">Bus blanket, 15 layers</button>
+    <button data-preset="cryo">Cryo blanket, 30 layers</button>
+    <button data-preset="light">Light blanket, 5 layers</button>
+    <button data-preset="meas">Use measured ε*</button>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="grid">
+    <div class="card">
+      <h2><span class="dot"></span>Blanket</h2>
+      <div class="row">
+        <label>ε* source<span class="hint">estimate from layers, or measured</span></label>
+        <select id="mode" style="width:210px;text-align:left">
+          <option value="layers">Estimate from layer count</option>
+          <option value="meas">Measured / handbook ε*</option>
+        </select>
+      </div>
+      <div class="row" id="row_n">
+        <label>Number of layers N<span class="hint">reflective shields</span></label>
+        <input type="number" id="nlay" value="15" step="1" min="1">
+      </div>
+      <div class="row" id="row_ef">
+        <label>Foil emissivity<span class="hint">VDA ≈ 0.035</span></label>
+        <input type="number" id="ef" value="0.035" step="any">
+      </div>
+      <div class="row" id="row_deg">
+        <label>Degradation factor<span class="hint">seams, penetrations; flight typ. 5–10×</span></label>
+        <input type="number" id="deg" value="8" step="any">
+      </div>
+      <div class="row" id="row_meas" style="display:none">
+        <label>Measured ε*<span class="hint">flight-typical 0.01–0.03</span></label>
+        <input type="number" id="emeas" value="0.02" step="any">
+      </div>
+      <div class="row">
+        <label>Blanket area<span class="hint">m²</span></label>
+        <input type="number" id="area" value="6" step="any">
+      </div>
+      <div class="row">
+        <label>Hot side temperature<span class="hint">°C, e.g. spacecraft interior</span></label>
+        <input type="number" id="th" value="20" step="any">
+      </div>
+      <div class="row">
+        <label>Cold side temperature<span class="hint">°C, outer layer / sink</span></label>
+        <input type="number" id="tc" value="-150" step="any">
+      </div>
+      <div class="note" id="mlinote"></div>
+    </div>
+
+    <div class="card results">
+      <h2><span class="dot"></span>Results</h2>
+      <div class="resgrid">
+        <div class="metric"><div class="k">Ideal ε* (layers)</div><div class="v"><span id="r_ei">–</span> <span class="u"></span></div></div>
+        <div class="metric"><div class="k">Effective ε* (flight)</div><div class="v"><span id="r_ee">–</span> <span class="u"></span></div></div>
+        <div class="metric"><div class="k">Heat leak flux</div><div class="v"><span id="r_flux">–</span> <span class="u">W/m²</span></div></div>
+        <div class="metric"><div class="k">Total heat leak</div><div class="v"><span id="r_q">–</span> <span class="u">W</span></div></div>
+      </div>
+      <div class="note" id="mlisum"></div>
+    </div>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="card">
+    <h2><span class="dot"></span>📖 How to use</h2>
+    <ol class="howto">
+      <li><span class="en-only">Estimate ε* from the <b>layer count</b>, then apply the <b>degradation factor</b> — flight blankets perform 5–10× worse than the ideal formula because of seams, edges and penetrations.</span><span class="zh-only">先按<b>层数</b>估算 ε*，再乘<b>退化系数</b>——由于接缝、边缘与穿舱件，实际飞行毯性能比理想公式差 5–10 倍。</span></li>
+      <li><span class="en-only">Or switch to <b>measured ε*</b> and use your vendor/heritage value (0.01–0.03 typical).</span><span class="zh-only">也可切换为<b>实测 ε*</b>，使用厂商/飞行继承数据（典型 0.01–0.03）。</span></li>
+      <li><span class="en-only">Beyond ~20–25 layers extra layers buy little — the leak is dominated by seams and standoffs.</span><span class="zh-only">超过约 20–25 层后再加层收益很小——漏热由接缝与支撑主导。</span></li>
+      <li><span class="en-only">Use ε*·A as the radiative term in the <b>Heater</b> tool for MLI-wrapped components.</span><span class="zh-only">包覆 MLI 的部件在<b>加热器</b>工具中辐射项即取 ε*·A。</span></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="article en-only">
+      <h2>MLI effective emissivity</h2>
+      <p>For N floating shields of emissivity ε_f between two surfaces, the ideal effective emissivity is</p>
+      <p><code>ε*_ideal = ε_f / ((N+1)·(2−ε_f))</code></p>
+      <p>and the blanket leak is <code>Q = ε*·σ·A·(T_h⁴ − T_c⁴)</code>. Real blankets are dominated by edge effects, seams, lacing buttons and harness penetrations, so flight values are 5–10× the ideal — always use measured data when available (ε* ≈ 0.015–0.03 for good workmanship).</p>
+      <p>All computation runs locally in your browser.</p>
+    </div>
+    <div class="article zh-only">
+      <h2>MLI 有效发射率</h2>
+      <p>两表面之间夹 N 层发射率为 ε_f 的反射屏，理想有效发射率为</p>
+      <p><code>ε*_理想 = ε_f / ((N+1)·(2−ε_f))</code></p>
+      <p>毯漏热 <code>Q = ε*·σ·A·(T_h⁴ − T_c⁴)</code>。实际隔热毯受边缘效应、接缝、系扣与线缆穿舱主导，飞行值为理想值的 5–10 倍——有实测数据务必用实测（工艺良好时 ε* ≈ 0.015–0.03）。</p>
+      <p>全部计算在你的浏览器本地完成。</p>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<footer>Free MLI heat leak calculator · effective emissivity, blanket leak · nothing leaves your browser.</footer>
+
+<script src="share.js?v=1"></script>
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>parseFloat($(id).value)||0;
+const SIG=5.670374e-8;
+
+function compute(){
+  const meas=$('mode').value==='meas';
+  $('row_n').style.display=meas?'none':'';
+  $('row_ef').style.display=meas?'none':'';
+  $('row_deg').style.display=meas?'none':'';
+  $('row_meas').style.display=meas?'':'none';
+  const A=num('area'), Th=num('th')+273.15, Tc=num('tc')+273.15;
+  if(A<=0) return;
+  let ei=NaN, ee;
+  if(meas){
+    ee=num('emeas');
+    $('r_ei').textContent='–';
+  }else{
+    const N=Math.max(1,Math.round(num('nlay'))), ef=num('ef');
+    if(ef<=0) return;
+    ei=ef/((N+1)*(2-ef));
+    ee=ei*Math.max(num('deg'),1);
+    $('r_ei').textContent=ei.toExponential(2);
+  }
+  if(!(ee>0)) return;
+  const flux=ee*SIG*(Th**4-Tc**4);
+  const q=flux*A;
+  const f2=x=>x.toFixed(2);
+  $('r_ee').textContent=ee.toFixed(4);
+  $('r_flux').textContent=f2(flux);
+  $('r_q').textContent=f2(q);
+  $('mlinote').textContent=meas?'':t('Ideal formula × degradation '+num('deg')+' → flight-expected ε*.','理想公式 × 退化系数 '+num('deg')+' → 飞行预期 ε*。');
+  $('mlisum').textContent=t('Blanket loses '+f2(q)+' W over '+A+' m² between '+num('th')+' °C and '+num('tc')+' °C.','隔热毯在 '+num('th')+' °C 与 '+num('tc')+' °C 之间、'+A+' m² 上漏热 '+f2(q)+' W。');
+}
+const presets={
+  bus:{mode:'layers',nlay:15,ef:0.035,deg:8,area:6,th:20,tc:-150},
+  cryo:{mode:'layers',nlay:30,ef:0.035,deg:5,area:2,th:-100,tc:-250},
+  light:{mode:'layers',nlay:5,ef:0.035,deg:8,area:1,th:20,tc:-100},
+  meas:{mode:'meas',emeas:0.02,area:6,th:20,tc:-150},
+};
+document.querySelectorAll('.preset-bar button').forEach(b=>b.addEventListener('click',()=>{
+  const c=presets[b.dataset.preset];for(const k in c)$(k).value=c[k];compute();}));
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',compute));
+if(window.ShareTool) ShareTool.apply();
+compute();
+if(window.ShareTool) ShareTool.initButton();
+if(window.onLang) window.onLang(compute);
+</script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script>
+</body>
+</html>

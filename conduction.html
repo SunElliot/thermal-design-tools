@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conductive Coupling Calculator — G = kA/L Series Path — Free Online Tool</title>
+<meta name="description" content="Free spacecraft conductive coupling calculator. Series thermal path of material segments: conductance G = kA/L per segment, total conductance and temperature drops for a given heat flow.">
+<meta name="keywords" content="thermal conductance calculator, kA/L, conductive coupling spacecraft, thermal strap, temperature drop, series thermal resistance">
+<link rel="canonical" href="https://sunelliot.github.io/thermal-design-tools/conduction.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Conductive Coupling Calculator">
+<meta property="og:description" content="Series kA/L path: per-segment conductance and temperature drops.">
+<link rel="stylesheet" href="styles.css?v=1">
+<script src="i18n.js?v=1"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Conductive Coupling Calculator","applicationCategory":"EngineeringApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<link rel="manifest" href="manifest.json">
+<style>
+.segs{width:100%;border-collapse:collapse;font-size:.85rem}
+.segs th{text-align:left;padding:6px;color:var(--muted);font-weight:600;border-bottom:1px solid #e2e8f0}
+.segs td{padding:3px 4px}
+.segs select{width:150px}
+.segs input[type=number]{width:80px}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">🌡️ ThermTools</a>
+</nav>
+
+<div class="page">
+<aside class="sidebar">
+  <a class="home" href="index.html" style="display:block;text-decoration:none">← All tools</a>
+  <ul class="toolnav">
+    <li class="grp">Environment</li>
+    <li><a href="environment-fluxes.html">Orbital Heat Fluxes</a></li>
+    <li class="grp">Heat Balance</li>
+    <li><a href="heat-balance.html">Spacecraft Heat Balance</a></li>
+    <li><a href="transient.html">Orbit Transient Temps</a></li>
+    <li class="grp">Rejection &amp; Control</li>
+    <li><a href="radiator.html">Radiator Sizing</a></li>
+    <li><a href="heater.html">Heater Sizing</a></li>
+    <li class="grp">Insulation &amp; Conduction</li>
+    <li><a href="mli.html">MLI Heat Leak</a></li>
+    <li><a href="conduction.html" class="active">Conductive Couplings</a></li>
+    <li class="grp">Reference</li>
+    <li><a href="reference.html">Coatings, Materials &amp; Limits</a></li>
+  </ul>
+</aside>
+<div class="pagemain">
+
+<header>
+  <h1>🔩 Conductive Coupling Calculator</h1>
+  <p>Series kA/L path · per-segment conductance &amp; ΔT · total coupling G</p>
+</header>
+
+<div class="wrap">
+  <div class="preset-bar">
+    <button data-preset="strap">Cu strap to radiator</button>
+    <button data-preset="mount">Unit on Al bracket</button>
+    <button data-preset="isolate">Isolated via GFRP</button>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="grid">
+    <div class="card" style="grid-column:1/-1">
+      <h2><span class="dot"></span>Series Path (heat source → sink)</h2>
+      <p class="en-only" style="color:var(--muted);font-size:.82rem;margin:0 0 10px">Up to 5 segments in series. Zero/blank area or length = segment skipped. Bolted-joint rows use a direct conductance instead of kA/L.</p>
+      <p class="zh-only" style="color:var(--muted);font-size:.82rem;margin:0 0 10px">最多 5 段串联。面积或长度留空/为 0 = 跳过该段。螺接界面行直接填接触热导，不用 kA/L。</p>
+      <div style="overflow-x:auto">
+      <table class="segs" id="segtable">
+        <tr><th></th><th>Material</th><th>Area (cm²)</th><th>Length (mm)</th><th style="text-align:right">G (W/K)</th><th style="text-align:right">ΔT (K)</th></tr>
+      </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Heat Flow</h2>
+      <div class="row">
+        <label>Heat flow Q<span class="hint">W through the path</span></label>
+        <input type="number" id="q" value="5" step="any">
+      </div>
+      <div class="note" id="cdnote"></div>
+    </div>
+
+    <div class="card results">
+      <h2><span class="dot"></span>Results</h2>
+      <div class="resgrid">
+        <div class="metric"><div class="k">Total conductance G</div><div class="v"><span id="r_g">–</span> <span class="u">W/K</span></div></div>
+        <div class="metric"><div class="k">Total resistance</div><div class="v"><span id="r_res">–</span> <span class="u">K/W</span></div></div>
+        <div class="metric"><div class="k">Total ΔT at Q</div><div class="v"><span id="r_dt">–</span> <span class="u">K</span></div></div>
+        <div class="metric"><div class="k">Active segments</div><div class="v"><span id="r_n">–</span> <span class="u"></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="card">
+    <h2><span class="dot"></span>📖 How to use</h2>
+    <ol class="howto">
+      <li><span class="en-only">Model the path from the dissipating unit to the sink as <b>series segments</b>: bracket, joint, structure, strap… pick materials and enter cross-section and length.</span><span class="zh-only">把从发热单机到热沉的路径拆成<b>串联段</b>：支架、结合面、结构、热带……选材料并填截面与长度。</span></li>
+      <li><span class="en-only">Bolted joints dominate many paths — the "Bolted joint" row uses a direct contact conductance (0.1–0.4 W/K per M4-class bolt typical in vacuum).</span><span class="zh-only">螺接界面常常是路径瓶颈——"螺接界面"行直接填接触热导（真空中 M4 级螺栓典型 0.1–0.4 W/K/颗）。</span></li>
+      <li><span class="en-only">Enter the heat flow <b>Q</b> to see per-segment and total ΔT; use the total G in the Heater tool.</span><span class="zh-only">填入热流 <b>Q</b> 查看各段与总 ΔT；总 G 可用于加热器工具。</span></li>
+      <li><span class="en-only">To thermally <b>isolate</b> (e.g. a battery), use GFRP/PEEK washers — note how G collapses with low-k materials.</span><span class="zh-only">需要<b>隔热安装</b>时（如蓄电池）用玻璃钢/PEEK 垫——注意低导热材料使 G 急剧减小。</span></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="article en-only">
+      <h2>Series conduction</h2>
+      <p>Each segment conducts <code>G_i = k·A/L</code>; series segments add as resistances: <code>1/G_total = Σ 1/G_i</code>, and the drop across each is <code>ΔT_i = Q/G_i</code>.</p>
+      <p>Typical conductivities (W/m·K): Cu 390, Al 6061 167, Al 7075 130, steel 16, Ti-6Al-4V 7, CFRP ~10 (in-plane, layup-dependent), GFRP 0.5, PEEK 0.25. Bolted joints in vacuum are contact-conductance limited and should be measured or taken from heritage.</p>
+      <p>All computation runs locally in your browser.</p>
+    </div>
+    <div class="article zh-only">
+      <h2>串联导热</h2>
+      <p>每段热导 <code>G_i = k·A/L</code>；串联按热阻相加：<code>1/G_总 = Σ 1/G_i</code>，各段温降 <code>ΔT_i = Q/G_i</code>。</p>
+      <p>典型导热系数（W/m·K）：铜 390、铝 6061 167、铝 7075 130、钢 16、钛 TC4 7、碳纤维板约 10（面内，随铺层变化）、玻璃钢 0.5、PEEK 0.25。真空中螺接界面受接触热导限制，应实测或取飞行继承数据。</p>
+      <p>全部计算在你的浏览器本地完成。</p>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<footer>Free conductive coupling calculator · series kA/L, ΔT · nothing leaves your browser.</footer>
+
+<script src="share.js?v=1"></script>
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>parseFloat($(id).value)||0;
+const NSEG=5;
+const MATS={
+  cu:{k:390,name:'Copper'},
+  al6:{k:167,name:'Al 6061'},
+  al7:{k:130,name:'Al 7075'},
+  ss:{k:16,name:'Stainless steel'},
+  ti:{k:7,name:'Ti-6Al-4V'},
+  cfrp:{k:10,name:'CFRP (in-plane)'},
+  gfrp:{k:0.5,name:'GFRP'},
+  peek:{k:0.25,name:'PEEK'},
+  joint:{k:0,name:'Bolted joint (direct G)'},
+};
+(function buildRows(){
+  const tb=$('segtable');
+  let opts='';
+  for(const key in MATS) opts+='<option value="'+key+'">'+MATS[key].name+'</option>';
+  for(let ix=1;ix<=NSEG;ix++){
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td style="color:var(--muted)">'+ix+'</td>'+
+      '<td><select id="sg_m_'+ix+'">'+opts+'</select></td>'+
+      '<td><input type="number" id="sg_a_'+ix+'" step="any" min="0" placeholder="cm²"></td>'+
+      '<td><input type="number" id="sg_l_'+ix+'" step="any" min="0" placeholder="mm / W/K"></td>'+
+      '<td style="text-align:right;font-variant-numeric:tabular-nums" id="sg_g_'+ix+'">–</td>'+
+      '<td style="text-align:right;font-variant-numeric:tabular-nums" id="sg_d_'+ix+'">–</td>';
+    tb.appendChild(tr);
+  }
+})();
+function compute(){
+  const q=num('q');
+  let rsum=0,count=0;
+  const act=[];
+  for(let ix=1;ix<=NSEG;ix++){
+    $('sg_g_'+ix).textContent='–'; $('sg_d_'+ix).textContent='–';
+    const mat=MATS[$('sg_m_'+ix).value];
+    let gi=0;
+    if(mat.k===0){                     // bolted joint: length field = direct G in W/K
+      gi=num('sg_l_'+ix);
+      if(gi<=0) continue;
+    }else{
+      const a=num('sg_a_'+ix)/1e4;     // cm² → m²
+      const L=num('sg_l_'+ix)/1e3;     // mm → m
+      if(a<=0||L<=0) continue;
+      gi=mat.k*a/L;
+    }
+    act.push({ix,gi});
+    rsum+=1/gi; count++;
+  }
+  const f=x=>x>=100?x.toFixed(0):(x>=1?x.toFixed(2):x.toFixed(4));
+  act.forEach(s=>{
+    $('sg_g_'+s.ix).textContent=f(s.gi);
+    $('sg_d_'+s.ix).textContent=q>0?f(q/s.gi):'–';
+  });
+  if(!count){ $('r_g').textContent='–'; $('r_res').textContent='–'; $('r_dt').textContent='–'; $('r_n').textContent='0'; return; }
+  const G=1/rsum;
+  $('r_g').textContent=f(G);
+  $('r_res').textContent=f(rsum);
+  $('r_dt').textContent=q>0?f(q*rsum):'–';
+  $('r_n').textContent=count;
+  $('cdnote').textContent=t('Total G = '+f(G)+' W/K — use it in the Heater tool.','总热导 G = '+f(G)+' W/K —— 可用于加热器工具。');
+}
+function fillSegs(rows){
+  for(let ix=1;ix<=NSEG;ix++){
+    const r=rows[ix-1]||['al6','',''];
+    $('sg_m_'+ix).value=r[0]; $('sg_a_'+ix).value=r[1]; $('sg_l_'+ix).value=r[2];
+  }
+  compute();
+}
+const presets={
+  strap:[['al6',4,30],['joint','',0.3],['cu',1,150],['joint','',0.3]],
+  mount:[['al6',8,40],['joint','',0.25],['al6',20,80]],
+  isolate:[['gfrp',2,10],['ss',0.8,20]],
+};
+document.querySelectorAll('.preset-bar button').forEach(b=>b.addEventListener('click',()=>{
+  fillSegs(presets[b.dataset.preset]);
+}));
+document.addEventListener('input',e=>{ if(e.target.matches('input,select')) compute(); });
+const hadQuery=window.ShareTool?ShareTool.apply():false;
+if(!hadQuery) fillSegs(presets.mount);
+compute();
+if(window.ShareTool) ShareTool.initButton();
+if(window.onLang) window.onLang(compute);
+</script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script>
+</body>
+</html>

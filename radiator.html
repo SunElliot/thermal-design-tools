@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spacecraft Radiator Sizing Calculator — Free Online Tool</title>
+<meta name="description" content="Free spacecraft radiator sizing calculator. Required radiator area from heat rejection, radiator temperature, emissivity, absorbed environment flux and fin efficiency — with cold-case heater check.">
+<meta name="keywords" content="radiator sizing spacecraft, heat rejection area, OSR radiator, fin efficiency, cold case heater, thermal control design">
+<link rel="canonical" href="https://sunelliot.github.io/thermal-design-tools/radiator.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Spacecraft Radiator Sizing Calculator">
+<meta property="og:description" content="Radiator area from rejected heat, temperature and environment — plus cold-case heater power.">
+<link rel="stylesheet" href="styles.css?v=1">
+<script src="i18n.js?v=1"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Spacecraft Radiator Sizing Calculator","applicationCategory":"EngineeringApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">🌡️ ThermTools</a>
+</nav>
+
+<div class="page">
+<aside class="sidebar">
+  <a class="home" href="index.html" style="display:block;text-decoration:none">← All tools</a>
+  <ul class="toolnav">
+    <li class="grp">Environment</li>
+    <li><a href="environment-fluxes.html">Orbital Heat Fluxes</a></li>
+    <li class="grp">Heat Balance</li>
+    <li><a href="heat-balance.html">Spacecraft Heat Balance</a></li>
+    <li><a href="transient.html">Orbit Transient Temps</a></li>
+    <li class="grp">Rejection &amp; Control</li>
+    <li><a href="radiator.html" class="active">Radiator Sizing</a></li>
+    <li><a href="heater.html">Heater Sizing</a></li>
+    <li class="grp">Insulation &amp; Conduction</li>
+    <li><a href="mli.html">MLI Heat Leak</a></li>
+    <li><a href="conduction.html">Conductive Couplings</a></li>
+    <li class="grp">Reference</li>
+    <li><a href="reference.html">Coatings, Materials &amp; Limits</a></li>
+  </ul>
+</aside>
+<div class="pagemain">
+
+<header>
+  <h1>❄️ Spacecraft Radiator Sizing Calculator</h1>
+  <p>Required area from rejected heat &amp; temperature · net flux · cold-case heater check</p>
+</header>
+
+<div class="wrap">
+  <div class="preset-bar">
+    <button data-preset="osr">OSR anti-sun radiator</button>
+    <button data-preset="white">White paint, sees albedo</button>
+    <button data-preset="cubesat">CubeSat face radiator</button>
+    <button data-preset="geo">GEO comsat panel</button>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="grid">
+    <div class="card">
+      <h2><span class="dot"></span>Hot Case (sizing)</h2>
+      <div class="row">
+        <label>Heat to reject<span class="hint">W, hot case</span></label>
+        <input type="number" id="q" value="200" step="any">
+      </div>
+      <div class="row">
+        <label>Radiator temperature<span class="hint">°C, allowed hot-case surface T</span></label>
+        <input type="number" id="trad" value="50" step="any">
+      </div>
+      <div class="row">
+        <label>Emissivity ε<span class="hint">OSR/white ≈ 0.80–0.90</span></label>
+        <input type="number" id="eps" value="0.85" step="any">
+      </div>
+      <div class="row">
+        <label>Absorbed external flux<span class="hint">W/m² on the radiator (env tool); anti-sun ≈ 0–30</span></label>
+        <input type="number" id="qext" value="80" step="any">
+      </div>
+      <div class="row">
+        <label>Fin / coupling efficiency<span class="hint">0–1, typ. 0.85–0.95</span></label>
+        <input type="number" id="fin" value="0.9" step="any">
+      </div>
+      <div class="row">
+        <label>Sizing margin<span class="hint">%, on rejected heat</span></label>
+        <input type="number" id="margin" value="20" step="any">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Cold Case (check)</h2>
+      <div class="row">
+        <label>Internal heat — cold<span class="hint">W into the radiator, cold case</span></label>
+        <input type="number" id="qcold" value="80" step="any">
+      </div>
+      <div class="row">
+        <label>Absorbed flux — cold<span class="hint">W/m², eclipse/aphelion</span></label>
+        <input type="number" id="qextc" value="10" step="any">
+      </div>
+      <div class="row">
+        <label>Min allowed temperature<span class="hint">°C, radiator/equipment survival</span></label>
+        <input type="number" id="tmin" value="-10" step="any">
+      </div>
+      <div class="note" id="rdnote"></div>
+    </div>
+
+    <div class="card results">
+      <h2><span class="dot"></span>Results</h2>
+      <div class="resgrid">
+        <div class="metric"><div class="k">Blackbody emission @ T</div><div class="v"><span id="r_bb">–</span> <span class="u">W/m²</span></div></div>
+        <div class="metric"><div class="k">Net rejection flux</div><div class="v"><span id="r_net">–</span> <span class="u">W/m²</span></div></div>
+        <div class="metric"><div class="k">Required area (with margin)</div><div class="v"><span id="r_area">–</span> <span class="u">m²</span></div></div>
+        <div class="metric"><div class="k">Cold-case equilibrium T</div><div class="v"><span id="r_tcold">–</span> <span class="u">°C</span></div></div>
+        <div class="metric"><div class="k">Heater to hold T_min</div><div class="v"><span id="r_htr">–</span> <span class="u">W</span></div></div>
+      </div>
+      <div id="rdBox" class="margin-box margin-good">–</div>
+    </div>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="card">
+    <h2><span class="dot"></span>📖 How to use</h2>
+    <ol class="howto">
+      <li><span class="en-only">Size in the <b>hot case</b>: max heat to reject at the max allowed radiator temperature, with the hot-case absorbed flux from the Environment tool.</span><span class="zh-only">按<b>热工况</b>定面积：最大排热量 + 允许的最高散热面温度 + 环境工具给出的热工况吸收热流。</span></li>
+      <li><span class="en-only">Prefer <b>anti-sun / deep-space facing</b> placement — absorbed flux near zero doubles the effective capacity vs a sun-viewing face.</span><span class="zh-only">散热面尽量<b>背阳/朝深空</b>布置——吸收热流接近零时，有效排热能力比对日面高得多。</span></li>
+      <li><span class="en-only">Then <b>check the cold case</b>: the same area with little internal heat gets cold; the tool reports the equilibrium temperature and the heater power needed to hold T_min — carry that into the Heater tool and the EPS power budget.</span><span class="zh-only">再<b>校核冷工况</b>：同样的面积在小内热时会过冷；工具给出平衡温度与维持 T_min 所需加热功率——请带入加热器工具与电源功率预算。</span></li>
+      <li><span class="en-only">Use EOL optical properties (ε stays, α degrades up) — sizing at EOL hot case is conservative for area.</span><span class="zh-only">采用寿命末期光学特性（ε 基本不变，α 退化升高）——按末期热工况定面积偏保守、安全。</span></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="article en-only">
+      <h2>Radiator sizing relations</h2>
+      <p><strong>Area:</strong> <code>A = Q·(1+margin) / (η·(ε·σ·T⁴ − q_abs))</code> — emission minus the absorbed environment flux, derated by fin/coupling efficiency η.</p>
+      <p><strong>Cold case:</strong> with the sized area fixed, <code>T_cold = [(Q_cold/(η·A) + q_abs,cold)/(ε·σ)]^0.25</code>; if below the minimum allowed temperature, heaters make up <code>Q_htr = η·A·(ε·σ·T_min⁴ − q_abs,cold) − Q_cold</code>.</p>
+      <p>Typical net capacities: an OSR radiator at 40 °C facing deep space rejects ~400 W/m²; a white-painted face seeing albedo/IR nets far less. Louvers or heat switches can cut the cold-case heater penalty.</p>
+      <p>All computation runs locally in your browser.</p>
+    </div>
+    <div class="article zh-only">
+      <h2>散热面设计关系式</h2>
+      <p><strong>面积:</strong> <code>A = Q·(1+余量) / (η·(ε·σ·T⁴ − q_吸收))</code> —— 辐射减去吸收的环境热流，再按翅片/耦合效率 η 折减。</p>
+      <p><strong>冷工况:</strong> 面积确定后，<code>T_冷 = [(Q_冷/(η·A) + q_吸收,冷)/(ε·σ)]^0.25</code>；若低于允许最低温度，需加热器补偿 <code>Q_加热 = η·A·(ε·σ·T_min⁴ − q_吸收,冷) − Q_冷</code>。</p>
+      <p>典型净排热能力：40 °C 的 OSR 面朝深空约 400 W/m²；看得到反照/红外的白漆面远低于此。百叶窗或热开关可降低冷工况加热代价。</p>
+      <p>全部计算在你的浏览器本地完成。</p>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<footer>Free spacecraft radiator sizing calculator · area, net flux, cold-case heater · nothing leaves your browser.</footer>
+
+<script src="share.js?v=1"></script>
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>parseFloat($(id).value)||0;
+const SIG=5.670374e-8;
+
+function compute(){
+  const q=num('q'), Tr=num('trad')+273.15, eps=num('eps');
+  const qext=num('qext'), fin=Math.min(Math.max(num('fin'),0.1),1), mg=1+num('margin')/100;
+  if(q<=0||eps<=0||Tr<=0) return;
+  const bb=eps*SIG*Tr**4;
+  const net=(bb-qext)*fin;
+  const f1=x=>x.toFixed(1), f2=x=>x.toFixed(2);
+  if(net<=0){
+    $('r_net').textContent=f1(net);
+    $('rdBox').className='margin-box margin-bad';
+    $('rdBox').textContent=t('Absorbed flux exceeds emission at this temperature — radiator cannot reject heat here; relocate it or raise T.','该温度下吸收热流超过辐射——此处无法排热；需改变布置或提高温度。');
+    return;
+  }
+  const area=q*mg/net;
+  // cold case with the sized area
+  const qcold=num('qcold'), qextc=num('qextc'), TminK=num('tmin')+273.15;
+  const Tcold=Math.pow((qcold/(fin*area)+qextc)/(eps*SIG),0.25);
+  const htr=Math.max(fin*area*(eps*SIG*TminK**4-qextc)-qcold,0);
+  $('r_bb').textContent=f1(bb);
+  $('r_net').textContent=f1(net);
+  $('r_area').textContent=f2(area);
+  $('r_tcold').textContent=f1(Tcold-273.15);
+  $('r_htr').textContent=Tcold>=TminK?'0':f1(htr);
+  const box=$('rdBox');
+  if(Tcold>=TminK){
+    box.className='margin-box margin-good';
+    box.textContent=t('Area '+f2(area)+' m² rejects '+f1(q*mg)+' W (incl. margin); cold case stays at '+f1(Tcold-273.15)+' °C ≥ T_min.','面积 '+f2(area)+' m² 可排 '+f1(q*mg)+' W（含余量）；冷工况温度 '+f1(Tcold-273.15)+' °C ≥ T_min。');
+  }else{
+    box.className='margin-box margin-warn';
+    box.textContent=t('Cold case drops to '+f1(Tcold-273.15)+' °C — budget '+f1(htr)+' W of heater power (add it to the EPS power budget).','冷工况将降至 '+f1(Tcold-273.15)+' °C —— 需 '+f1(htr)+' W 加热功率（请计入电源功率预算）。');
+  }
+  $('rdnote').textContent=t('Cold case uses the sized hot-case area with cold internal heat and cold environment.','冷工况校核使用热工况所定面积 + 冷内热 + 冷环境。');
+}
+const presets={
+  osr:{q:200,trad:50,eps:0.80,qext:20,fin:0.9,margin:20,qcold:80,qextc:5,tmin:-10},
+  white:{q:200,trad:50,eps:0.88,qext:150,fin:0.9,margin:20,qcold:80,qextc:40,tmin:-10},
+  cubesat:{q:6,trad:40,eps:0.85,qext:60,fin:0.95,margin:25,qcold:2,qextc:10,tmin:-20},
+  geo:{q:4000,trad:60,eps:0.80,qext:60,fin:0.85,margin:15,qcold:1500,qextc:10,tmin:0},
+};
+document.querySelectorAll('.preset-bar button').forEach(b=>b.addEventListener('click',()=>{
+  const c=presets[b.dataset.preset];for(const k in c)$(k).value=c[k];compute();}));
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',compute));
+if(window.ShareTool) ShareTool.apply();
+compute();
+if(window.ShareTool) ShareTool.initButton();
+if(window.onLang) window.onLang(compute);
+</script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script>
+</body>
+</html>

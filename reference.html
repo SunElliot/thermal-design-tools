@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thermal Coatings, Materials & Temperature Limits Reference — Free Online Tool</title>
+<meta name="description" content="Quick reference for spacecraft thermal design: coating alpha/epsilon BOL and EOL, material conductivity and specific heat, component temperature limits and thermal environment constants.">
+<meta name="keywords" content="thermal coating properties, alpha epsilon table, OSR white paint kapton, spacecraft temperature limits, thermal conductivity reference">
+<link rel="canonical" href="https://sunelliot.github.io/thermal-design-tools/reference.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Thermal Coatings, Materials & Temperature Limits">
+<meta property="og:description" content="Coating alpha/epsilon, material k and cp, component limits and environment constants.">
+<link rel="stylesheet" href="styles.css?v=1">
+<script src="i18n.js?v=1"></script>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+<nav class="topnav">
+  <a class="brand" href="index.html">🌡️ ThermTools</a>
+</nav>
+
+<div class="page">
+<aside class="sidebar">
+  <a class="home" href="index.html" style="display:block;text-decoration:none">← All tools</a>
+  <ul class="toolnav">
+    <li class="grp">Environment</li>
+    <li><a href="environment-fluxes.html">Orbital Heat Fluxes</a></li>
+    <li class="grp">Heat Balance</li>
+    <li><a href="heat-balance.html">Spacecraft Heat Balance</a></li>
+    <li><a href="transient.html">Orbit Transient Temps</a></li>
+    <li class="grp">Rejection &amp; Control</li>
+    <li><a href="radiator.html">Radiator Sizing</a></li>
+    <li><a href="heater.html">Heater Sizing</a></li>
+    <li class="grp">Insulation &amp; Conduction</li>
+    <li><a href="mli.html">MLI Heat Leak</a></li>
+    <li><a href="conduction.html">Conductive Couplings</a></li>
+    <li class="grp">Reference</li>
+    <li><a href="reference.html" class="active">Coatings, Materials &amp; Limits</a></li>
+  </ul>
+</aside>
+<div class="pagemain">
+
+<header>
+  <h1>📚 Thermal Coatings, Materials &amp; Limits</h1>
+  <p>Coating α/ε (BOL→EOL) · material k, c_p · component temperature limits · environment constants</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2><span class="dot"></span>Surface Coatings</h2>
+    <table>
+      <tr><th><span class="en-only">Coating</span><span class="zh-only">涂层</span></th><th>α (BOL→EOL)</th><th>ε</th><th>α/ε (BOL)</th><th><span class="en-only">Behaviour in sun</span><span class="zh-only">受晒特性</span></th></tr>
+      <tr><td><span class="en-only">White paint (Z93/S13G)</span><span class="zh-only">白漆（Z93/S13G）</span></td><td>0.15→0.35</td><td>0.90</td><td>0.17</td><td><span class="en-only">Cold; UV-degrades</span><span class="zh-only">偏冷；紫外退化</span></td></tr>
+      <tr><td>OSR / SSM</td><td>0.08→0.15</td><td>0.80</td><td>0.10</td><td><span class="en-only">Coldest, stable — radiators</span><span class="zh-only">最冷且稳定——散热面首选</span></td></tr>
+      <tr><td><span class="en-only">Black paint (Z306)</span><span class="zh-only">黑漆（Z306）</span></td><td>0.95</td><td>0.87</td><td>1.09</td><td><span class="en-only">Neutral; internal surfaces</span><span class="zh-only">近中性；多用于舱内</span></td></tr>
+      <tr><td><span class="en-only">Aluminized kapton (kapton out)</span><span class="zh-only">镀铝聚酰亚胺（膜朝外）</span></td><td>0.38→0.45</td><td>0.67</td><td>0.57</td><td><span class="en-only">MLI outer layer</span><span class="zh-only">MLI 外层常用</span></td></tr>
+      <tr><td><span class="en-only">Bare aluminum (VDA)</span><span class="zh-only">裸铝（镀铝面）</span></td><td>0.12</td><td>0.04</td><td>3.0</td><td><span class="en-only">Hot in sun; low-e shields</span><span class="zh-only">受晒很热；用作低发射屏</span></td></tr>
+      <tr><td><span class="en-only">Anodized aluminum</span><span class="zh-only">阳极氧化铝</span></td><td>0.25–0.45</td><td>0.80</td><td>~0.4</td><td><span class="en-only">Structure default</span><span class="zh-only">结构默认表面</span></td></tr>
+      <tr><td><span class="en-only">Solar cell (covered)</span><span class="zh-only">太阳电池（含盖片）</span></td><td>0.75–0.85</td><td>0.82</td><td>~1.0</td><td><span class="en-only">Arrays run 50–90 °C</span><span class="zh-only">帆板在轨 50–90 °C</span></td></tr>
+    </table>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="card">
+    <h2><span class="dot"></span>Structural Materials</h2>
+    <table>
+      <tr><th><span class="en-only">Material</span><span class="zh-only">材料</span></th><th>k (W/m·K)</th><th>c_p (J/kg·K)</th><th>ρ (kg/m³)</th></tr>
+      <tr><td><span class="en-only">Copper</span><span class="zh-only">铜</span></td><td>390</td><td>385</td><td>8960</td></tr>
+      <tr><td>Al 6061</td><td>167</td><td>896</td><td>2700</td></tr>
+      <tr><td>Al 7075</td><td>130</td><td>960</td><td>2810</td></tr>
+      <tr><td><span class="en-only">Stainless steel 304</span><span class="zh-only">不锈钢 304</span></td><td>16</td><td>500</td><td>7900</td></tr>
+      <tr><td>Ti-6Al-4V</td><td>7</td><td>520</td><td>4430</td></tr>
+      <tr><td><span class="en-only">CFRP (in-plane, typical)</span><span class="zh-only">碳纤维板（面内典型）</span></td><td>5–50</td><td>800</td><td>1600</td></tr>
+      <tr><td>GFRP</td><td>0.5</td><td>1000</td><td>1900</td></tr>
+      <tr><td>PEEK</td><td>0.25</td><td>1340</td><td>1300</td></tr>
+    </table>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="card">
+    <h2><span class="dot"></span>Typical Component Temperature Limits</h2>
+    <table>
+      <tr><th><span class="en-only">Component</span><span class="zh-only">部件</span></th><th><span class="en-only">Operating</span><span class="zh-only">工作</span></th><th><span class="en-only">Survival</span><span class="zh-only">存储/生存</span></th></tr>
+      <tr><td><span class="en-only">Li-ion battery</span><span class="zh-only">锂离子蓄电池</span></td><td>+10…+30 °C</td><td>0…+40 °C</td></tr>
+      <tr><td><span class="en-only">Electronics (typical)</span><span class="zh-only">电子设备（典型）</span></td><td>−20…+50 °C</td><td>−40…+60 °C</td></tr>
+      <tr><td><span class="en-only">Star tracker / IMU</span><span class="zh-only">星敏 / 惯组</span></td><td>0…+40 °C</td><td>−20…+50 °C</td></tr>
+      <tr><td><span class="en-only">Optical payload</span><span class="zh-only">光学载荷</span></td><td>+20 ± 3 °C</td><td>−30…+50 °C</td></tr>
+      <tr><td><span class="en-only">Hydrazine propellant</span><span class="zh-only">肼类推进剂</span></td><td>+7…+40 °C</td><td>&gt; +7 °C</td></tr>
+      <tr><td><span class="en-only">Solar array</span><span class="zh-only">太阳帆板</span></td><td>−100…+110 °C</td><td>−150…+120 °C</td></tr>
+      <tr><td><span class="en-only">Antenna / structure</span><span class="zh-only">天线 / 结构</span></td><td>−150…+120 °C</td><td>−170…+130 °C</td></tr>
+    </table>
+    <p style="color:var(--muted);font-size:.82rem"><span class="en-only">Program-specific — always use the unit ICDs; these are early-design placeholders. Batteries and optics usually drive the design.</span><span class="zh-only">具体以单机接口文件为准——此处为方案阶段占位值。通常由蓄电池与光学载荷主导设计。</span></p>
+  </div>
+
+  <div class="adslot">Ad placeholder</div>
+
+  <div class="card">
+    <h2><span class="dot"></span>Environment Constants</h2>
+    <table>
+      <tr><th><span class="en-only">Constant</span><span class="zh-only">常数</span></th><th><span class="en-only">Value</span><span class="zh-only">数值</span></th></tr>
+      <tr><td><span class="en-only">Stefan–Boltzmann σ</span><span class="zh-only">斯特藩–玻尔兹曼常数 σ</span></td><td>5.670 × 10⁻⁸ W/(m²·K⁴)</td></tr>
+      <tr><td><span class="en-only">Solar constant (min/mean/max)</span><span class="zh-only">太阳常数（最小/平均/最大）</span></td><td>1322 / 1361 / 1414 W/m²</td></tr>
+      <tr><td><span class="en-only">Earth albedo</span><span class="zh-only">地球反照率</span></td><td>0.30 ± 0.05</td></tr>
+      <tr><td><span class="en-only">Earth IR emission</span><span class="zh-only">地球红外辐射</span></td><td>237 (218–258) W/m²</td></tr>
+      <tr><td><span class="en-only">Earth equivalent blackbody</span><span class="zh-only">地球等效黑体温度</span></td><td>255 K</td></tr>
+      <tr><td><span class="en-only">Deep space sink</span><span class="zh-only">深空热沉</span></td><td>≈ 3 K</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2><span class="dot"></span>📖 How to use</h2>
+    <ol class="howto">
+      <li><span class="en-only">The design tools reference these values — override with vendor/measured data as the design matures.</span><span class="zh-only">各设计工具引用本页数值——随设计深入应以厂商/实测数据覆盖。</span></li>
+      <li><span class="en-only">Use EOL α for hot cases (coatings darken with UV/AO exposure); ε is essentially stable.</span><span class="zh-only">热工况用寿命末期 α（涂层受紫外/原子氧退化变深）；ε 基本稳定。</span></li>
+    </ol>
+  </div>
+</div>
+
+</div>
+</div>
+
+<footer>Spacecraft thermal quick reference · coatings, materials, limits · nothing leaves your browser.</footer>
+
+<script src="share.js?v=1"></script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");</script>
+</body>
+</html>
