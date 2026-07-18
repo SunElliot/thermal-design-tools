@@ -1,4 +1,4 @@
-const CACHE = 'thermtools-v1';
+const CACHE = 'thermtools-v2';
 const ASSETS = [
   './',
   './index.html',
