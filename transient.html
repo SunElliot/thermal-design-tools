@@ -77,7 +77,7 @@
         <input type="number" id="period" value="95" step="any">
       </div>
       <div class="row">
-        <label>Eclipse duration<span class="hint">min/orbit — see OrbitTools</span></label>
+        <label>Eclipse duration<span class="hint">min/orbit</span> <a data-xtarget="https://sunelliot.github.io/orbit-design-tools/eclipse.html" data-xmap="tecl:eclmax,period:period" style="color:#2563eb;text-decoration:none;white-space:nowrap;font-weight:600">↗ OrbitTools</a></label>
         <input type="number" id="tecl" value="35" step="any">
       </div>
     </div>
@@ -155,6 +155,7 @@
 <footer>Free orbit transient temperature simulator · eclipse swing & time constant · nothing leaves your browser.</footer>
 
 <script src="share.js?v=1"></script>
+<script src="xlink.js?v=1"></script>
 <script>
 const $=id=>document.getElementById(id);
 const num=id=>parseFloat($(id).value)||0;
